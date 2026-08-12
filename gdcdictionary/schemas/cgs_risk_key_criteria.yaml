@@ -8,9 +8,11 @@ category: clinical
 project: '*'
 program: '*'
 description: >-
-  Baseline patient-level Consensus Genomic Staging (CGS) risk classification
-  and key criteria for high-risk multiple myeloma, as defined by the
-  International Myeloma Society and International Myeloma Working Group.
+  The International Myeloma Society (IMS) and International Myeloma Working
+  Group (IMWG) Consensus Genomic Staging (CGS) defines high-risk multiple
+  myeloma using specific molecular, genetic, and biochemical markers to better
+  predict patient survival and early relapse. This node records the baseline
+  patient-level CGS risk classification and supporting criteria.
 additionalProperties: false
 submittable: true
 downloadable: true
