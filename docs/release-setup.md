@@ -34,7 +34,17 @@ all write access private. Do not grant public `s3:ListBucket` or `s3:PutObject`.
 
 ## 2. Configure GitHub as an AWS OIDC provider
 
-Create the provider once per AWS account if it does not already exist:
+The commands below require an AWS identity that can administer IAM. First get
+the AWS account ID and check whether the GitHub provider already exists:
+
+```bash
+aws sts get-caller-identity --query Account --output text
+aws iam list-open-id-connect-providers
+```
+
+In the provider list, look for an ARN ending in
+`oidc-provider/token.actions.githubusercontent.com`. Create it only if it is
+not already present in this AWS account:
 
 ```bash
 aws iam create-open-id-connect-provider \
@@ -42,7 +52,7 @@ aws iam create-open-id-connect-provider \
   --client-id-list sts.amazonaws.com
 ```
 
-Create an IAM role with the following trust policy, replacing
+Next, save the following as `mmrf-dictionary-trust-policy.json`, replacing
 `AWS_ACCOUNT_ID`. The `sub` restriction permits only release jobs from this
 repository that use the protected `dictionary-release` environment.
 
@@ -67,8 +77,18 @@ repository that use the protected `dictionary-release` environment.
 }
 ```
 
-Attach only the permissions needed to publish dictionary artifacts, replacing
-`BUCKET` and the prefix if necessary:
+Create the role from that trust policy:
+
+```bash
+aws iam create-role \
+  --role-name mmrf-dictionary-release \
+  --description "Publish versioned MMRF dictionary artifacts from GitHub Actions" \
+  --assume-role-policy-document file://mmrf-dictionary-trust-policy.json
+```
+
+Save the following as `mmrf-dictionary-s3-policy.json`, replacing `BUCKET` and
+the prefix if necessary. This is the role's permissions policy, separate from
+its trust policy.
 
 ```json
 {
@@ -90,15 +110,37 @@ Attach only the permissions needed to publish dictionary artifacts, replacing
 }
 ```
 
+Attach the permissions policy and record the role ARN reported by the last
+command:
+
+```bash
+aws iam put-role-policy \
+  --role-name mmrf-dictionary-release \
+  --policy-name PublishMMRFDictionaryArtifacts \
+  --policy-document file://mmrf-dictionary-s3-policy.json
+
+aws iam get-role \
+  --role-name mmrf-dictionary-release \
+  --query Role.Arn \
+  --output text
+```
+
 No AWS access key or secret access key is stored in GitHub.
 This follows [GitHub's AWS OIDC guidance][github-oidc] and scopes the AWS trust
 policy to this repository's protected release environment.
 
 ## 3. Configure the GitHub environment and variables
 
-In repository settings, create an environment named `dictionary-release`.
-Restrict its deployment tags to a semantic-version pattern and add required
-reviewers if desired. Configure these environment variables:
+In `theMMRF/mmrf_dictionary`, open **Settings → Environments → New
+environment**, enter `dictionary-release`, and choose **Configure environment**.
+
+Under **Deployment branches and tags**, choose **Selected branches and tags**
+and add the tag pattern `*.*.*`. The workflow separately enforces an exact
+numeric `MAJOR.MINOR.PATCH` format. Add required reviewers if desired.
+
+On that environment page, use **Environment variables → Add environment
+variable** to configure the following values. These are identifiers rather
+than credentials, so they do not need to be stored as secrets.
 
 | Variable | Required | Example |
 | --- | --- | --- |
@@ -111,6 +153,11 @@ reviewers if desired. Configure these environment variables:
 The public base URL must not include the dictionary prefix or version. If it is
 unset, the workflow reports the standard virtual-hosted S3 URL.
 
+Before publishing, open **Settings → Actions → General** and confirm that
+GitHub Actions are enabled for the repository. The workflow declares the
+minimal token permissions it needs, including `id-token: write` for OIDC and
+`contents: write` for attaching files to a release.
+
 ## 4. Publish a release
 
 1. Merge a validated dictionary change to `master`.
@@ -121,6 +168,13 @@ unset, the workflow reports the standard virtual-hosted S3 URL.
 5. Open the reported `schema.json` URL without AWS credentials.
 6. Update the target environment's `dictionaryUrl` in `mmrf_gen3` to the new,
    immutable versioned URL.
+
+You can perform an anonymous reachability check with:
+
+```bash
+curl --fail --location --silent --show-error \
+  "PUBLIC_BASE_URL/mmrf_dictionary/VERSION/schema.json" >/dev/null
+```
 
 Do not overwrite a published version. If an artifact is incorrect, create a
 new patch release.
