@@ -21,7 +21,7 @@ For an existing bucket, choose a prefix such as `mmrf_dictionary`. A release
 will be stored at:
 
 ```text
-s3://BUCKET/mmrf_dictionary/VERSION/schema.json
+s3://mmrf-dictionary-releases/mmrf_dictionary/VERSION/schema.json
 ```
 
 If the bucket is private, put CloudFront in front of it with Origin Access
@@ -29,8 +29,9 @@ Control and use the CloudFront hostname for `DICTIONARY_PUBLIC_BASE_URL`.
 Avoid making unrelated objects in a shared bucket public.
 
 If you use a directly public S3 URL instead, grant anonymous `s3:GetObject`
-only for `arn:aws:s3:::BUCKET/mmrf_dictionary/*` in the bucket policy and keep
-all write access private. Do not grant public `s3:ListBucket` or `s3:PutObject`.
+only for `arn:aws:s3:::mmrf-dictionary-releases/mmrf_dictionary/*` in the
+bucket policy and keep all write access private. Do not grant public
+`s3:ListBucket` or `s3:PutObject`.
 
 ## 2. Configure GitHub as an AWS OIDC provider
 
@@ -86,8 +87,9 @@ aws iam create-role \
   --assume-role-policy-document file://mmrf-dictionary-trust-policy.json
 ```
 
-Save the following as `mmrf-dictionary-s3-policy.json`, replacing `BUCKET` and
-the prefix if necessary. This is the role's permissions policy, separate from
+Save the following as `mmrf-dictionary-s3-policy.json`. It targets the
+MMRF-owned `mmrf-dictionary-releases` bucket and the default
+`mmrf_dictionary` prefix. This is the role's permissions policy, separate from
 its trust policy.
 
 ```json
@@ -98,13 +100,13 @@ its trust policy.
       "Sid": "PublishVersionedDictionaryArtifacts",
       "Effect": "Allow",
       "Action": ["s3:PutObject"],
-      "Resource": "arn:aws:s3:::BUCKET/mmrf_dictionary/*"
+      "Resource": "arn:aws:s3:::mmrf-dictionary-releases/mmrf_dictionary/*"
     },
     {
       "Sid": "VerifyPublishedDictionaryArtifacts",
       "Effect": "Allow",
       "Action": ["s3:GetObject"],
-      "Resource": "arn:aws:s3:::BUCKET/mmrf_dictionary/*"
+      "Resource": "arn:aws:s3:::mmrf-dictionary-releases/mmrf_dictionary/*"
     }
   ]
 }
@@ -161,7 +163,7 @@ than credentials, so they do not need to be stored as secrets.
 | --- | --- | --- |
 | `DICTIONARY_RELEASE_ROLE_ARN` | Yes | `arn:aws:iam::123456789012:role/mmrf-dictionary-release` |
 | `DICTIONARY_AWS_REGION` | Yes | `us-east-1` |
-| `DICTIONARY_ARTIFACT_BUCKET` | Yes | `mmrf-dictionary-artifacts` |
+| `DICTIONARY_ARTIFACT_BUCKET` | Yes | `mmrf-dictionary-releases` |
 | `DICTIONARY_ARTIFACT_PREFIX` | No | `mmrf_dictionary` |
 | `DICTIONARY_PUBLIC_BASE_URL` | No | `https://dictionary.themmrf.org` |
 
