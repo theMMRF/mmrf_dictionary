@@ -157,20 +157,18 @@ Under **Deployment branches and tags**, choose **Selected branches and tags**
 and add the tag pattern `*.*.*`. The workflow separately enforces an exact
 numeric `MAJOR.MINOR.PATCH` format.
 
-Under **Environment protection rules**:
+Do not configure **Required reviewers** if publishing a GitHub release is the
+MMRF's release approval event. In that model, restrict permission to create
+releases and semantic-version tags to the appropriate repository maintainers,
+and require pull-request review before changes reach `master`.
 
-1. Enable **Required reviewers**.
-2. Select at least one MMRF administrator or release-approver team.
-3. Enable **Prevent self-review** so the person who starts the release cannot
-   approve its deployment.
-
-Treat this approval gate as required, not optional. The AWS trust policy limits
-role assumption to jobs from this repository using the `dictionary-release`
-environment; the required reviewer controls which of those jobs may proceed to
-request the OIDC token and assume the S3 publishing role. If GitHub changes the
-organization plan or settings so required environment reviewers are
-unavailable, do not publish releases until an equivalent independently approved
-deployment control is in place.
+Required environment reviewers may be enabled later if the MMRF decides that
+publishing to S3 needs a second approval beyond the reviewed merge and release
+creation. Enabling that rule causes every release workflow to wait for a
+deployment approval. The AWS trust policy still limits role assumption to jobs
+from this repository using the `dictionary-release` environment, but without a
+required reviewer, an authorized repository maintainer can initiate publishing
+without a second person approving the deployment.
 
 On that environment page, use **Environment variables → Add environment
 variable** to configure the following values. These are identifiers rather
