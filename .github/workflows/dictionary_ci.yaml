@@ -103,6 +103,7 @@ jobs:
           gh release upload "$RELEASE_TAG"
           release-artifacts/schema.json
           release-artifacts/schema.json.sha256
+          --repo "$GITHUB_REPOSITORY"
           --clobber
 
       - name: Configure short-lived AWS credentials
