@@ -1020,28 +1020,32 @@ censor_pfs:
 cgs_risk_category:
   common:
     description: >-
-      Final CGS risk classification (High/Standard/NA)
+      The International Myeloma Society (IMS) and International Myeloma Working
+      Group (IMWG) Consensus Genomic Staging (CGS) defines high-risk multiple
+      myeloma using specific molecular, genetic, and biochemical markers to
+      better predict patient survival and early relapse. This property records
+      the final CGS risk classification (High Risk/Standard Risk/NA).
     termDef:
       term: >-
-        Clinical Genomic Scoring Risk Category
-      source: MMRF
+        Consensus Genomic Staging Risk Category
+      source: IMS-IMWG
       cde_id:
       cde_version:
-      term_url:
+      term_url: "https://doi.org/10.1200/JCO-24-01893"
 
 cgs_risk_criteria:
   common:
     description: >-
-      The Clinical Genomic Scoring (CGS) risk criteria met by the case. Only
+      The Consensus Genomic Staging (CGS) risk criteria met by the case. Only
       criteria with a positive result are included; negative and unavailable
       criterion results are omitted.
     termDef:
       term: >-
-        Clinical Genomic Scoring Risk Criteria
-      source: MMRF
+        Consensus Genomic Staging Risk Criteria
+      source: IMS-IMWG
       cde_id:
       cde_version:
-      term_url:
+      term_url: "https://doi.org/10.1200/JCO-24-01893"
 
 channel:
   common:
@@ -4447,15 +4451,15 @@ other_criteria:
   common:
     description: >-
       Known positive and negative results for genomic and laboratory criteria
-      used to derive Clinical Genomic Scoring (CGS) risk. Unavailable results
+      used to derive Consensus Genomic Staging (CGS) risk. Unavailable results
       are omitted.
     termDef:
       term: >-
-        Other Clinical Genomic Scoring Criteria
-      source: MMRF
+        Other Consensus Genomic Staging Criteria
+      source: IMS-IMWG
       cde_id:
       cde_version:
-      term_url:
+      term_url: "https://doi.org/10.1200/JCO-24-01893"
 
 osteopenia_osteoporosis:
   common:

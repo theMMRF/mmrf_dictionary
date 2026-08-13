@@ -2,6 +2,11 @@
 
 The MMRF data commons is powered by the Gen3 software stack. For more information on Gen3, visit the documentation at gen3.org. For more details about how Gen3 uses a data model and how the data dictionary should be formatted, see https://gen3.org/resources/user/dictionary/.
 
+This MMRF-owned repository is the source of truth for the MMRF Virtual Lab
+dictionary. The `uc-cdis/mmrf_dictionary` repository remains configured as an
+upstream remote for reviewing relevant Gen3 changes, but releases used by the
+MMRF environments are produced from this repository.
+
 
 # Data Dictionary
 
@@ -141,8 +146,19 @@ effects.
 
 ### Testing
 
-Commits will automagically be run on TravisCI when a Pull Request is opened.
-If you would like to test locally they are run via [tox](https://tox.readthedocs.io/en/latest/)
+Pull requests and pushes to `master` are validated by GitHub Actions using
+`dictionaryutils`. The workflow also builds the deployable `schema.json` as a
+GitHub Actions artifact.
+
+For local validation with Docker, from the repository root run:
+
+```bash
+docker run --rm -v "$(pwd):/dictionary" quay.io/cdis/dictionaryutils:master
+```
+
+Published GitHub releases are deployed to an MMRF-controlled S3 location using
+short-lived AWS credentials. See [docs/release-setup.md](docs/release-setup.md)
+for the one-time AWS/GitHub setup and the release procedure.
 
 
 ### Versioning

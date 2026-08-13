@@ -1,0 +1,143 @@
+name: Test and release MMRF dictionary
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Validate and build schema
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out dictionary source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Poetry
+        run: python -m pip install --upgrade pip poetry
+
+      - name: Install dictionary package
+        run: poetry install --all-extras --no-interaction
+
+      - name: Install dictionary validation tools
+        run: |
+          git clone --depth 1 https://github.com/uc-cdis/dictionaryutils.git
+          cd dictionaryutils
+          poetry install --all-extras --no-interaction
+          poetry run pip uninstall -y gen3dictionary gdcdictionary
+          poetry run pip install ..
+
+      - name: Validate dictionary and build schema.json
+        run: |
+          cd dictionaryutils
+          poetry run ./run_tests.sh
+          test -s artifacts/schema.json
+
+      - name: Upload schema artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mmrf-dictionary-schema
+          path: dictionaryutils/artifacts/schema.json
+          if-no-files-found: error
+
+  release:
+    name: Publish versioned dictionary
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dictionary-release
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+    env:
+      AWS_REGION: ${{ vars.DICTIONARY_AWS_REGION }}
+      DICTIONARY_BUCKET: ${{ vars.DICTIONARY_ARTIFACT_BUCKET }}
+      DICTIONARY_PREFIX: ${{ vars.DICTIONARY_ARTIFACT_PREFIX }}
+      DICTIONARY_PUBLIC_BASE_URL: ${{ vars.DICTIONARY_PUBLIC_BASE_URL }}
+      DICTIONARY_RELEASE_ROLE_ARN: ${{ vars.DICTIONARY_RELEASE_ROLE_ARN }}
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+    steps:
+      - name: Validate release configuration
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must be a semantic version such as 0.0.37" >&2
+            exit 1
+          fi
+          for variable in AWS_REGION DICTIONARY_BUCKET DICTIONARY_RELEASE_ROLE_ARN; do
+            if [[ -z "${!variable}" ]]; then
+              echo "Required repository/environment variable $variable is not configured" >&2
+              exit 1
+            fi
+          done
+
+      - name: Download schema artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mmrf-dictionary-schema
+          path: release-artifacts
+
+      - name: Create checksum
+        working-directory: release-artifacts
+        run: sha256sum schema.json > schema.json.sha256
+
+      - name: Attach schema to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release upload "$RELEASE_TAG"
+          release-artifacts/schema.json
+          release-artifacts/schema.json.sha256
+          --clobber
+
+      - name: Configure short-lived AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.DICTIONARY_RELEASE_ROLE_ARN }}
+          aws-region: ${{ vars.DICTIONARY_AWS_REGION }}
+
+      - name: Publish immutable S3 artifacts
+        run: |
+          prefix="${DICTIONARY_PREFIX:-mmrf_dictionary}"
+          destination="s3://${DICTIONARY_BUCKET}/${prefix}/${RELEASE_TAG}"
+          aws s3 cp release-artifacts/schema.json "${destination}/schema.json" \
+            --content-type application/json \
+            --cache-control "public,max-age=31536000,immutable"
+          aws s3 cp release-artifacts/schema.json.sha256 \
+            "${destination}/schema.json.sha256" \
+            --content-type text/plain \
+            --cache-control "public,max-age=31536000,immutable"
+          aws s3api head-object \
+            --bucket "$DICTIONARY_BUCKET" \
+            --key "${prefix}/${RELEASE_TAG}/schema.json"
+
+      - name: Write deployment summary
+        run: |
+          prefix="${DICTIONARY_PREFIX:-mmrf_dictionary}"
+          if [[ -n "$DICTIONARY_PUBLIC_BASE_URL" ]]; then
+            public_url="${DICTIONARY_PUBLIC_BASE_URL%/}/${prefix}/${RELEASE_TAG}/schema.json"
+          else
+            public_url="https://${DICTIONARY_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${prefix}/${RELEASE_TAG}/schema.json"
+          fi
+          {
+            echo "## MMRF dictionary ${RELEASE_TAG}"
+            echo
+            echo "Published schema: ${public_url}"
+            echo
+            echo "Use this immutable URL as the Gen3 dictionaryUrl after verifying it is publicly reachable."
+          } >> "$GITHUB_STEP_SUMMARY"

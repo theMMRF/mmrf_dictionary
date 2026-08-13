@@ -8,8 +8,11 @@ category: clinical
 project: '*'
 program: '*'
 description: >-
-  Baseline patient-level Clinical Genomic Scoring (CGS) risk classification and
-  key criteria for multiple myeloma.
+  The International Myeloma Society (IMS) and International Myeloma Working
+  Group (IMWG) Consensus Genomic Staging (CGS) defines high-risk multiple
+  myeloma using specific molecular, genetic, and biochemical markers to better
+  predict patient survival and early relapse. This node records the baseline
+  patient-level CGS risk classification and supporting criteria.
 additionalProperties: false
 submittable: true
 downloadable: true
@@ -48,6 +51,8 @@ properties:
   cgs_risk_category:
     $ref: "_terms.yaml#/cgs_risk_category/common"
     enum:
+      - "High Risk"
+      - "Standard Risk"
       - "High"
       - "Standard"
       - "NA"
@@ -59,6 +64,10 @@ properties:
     uniqueItems: true
     items:
       enum:
+        - "1. del(17p), with a cutoff of >20% clonal fraction, and/or TP53 mutation"
+        - "2. an IgH translocation including t(4;14), t(14;16), or t(14;20) along with 1q+ and/or del(1p32)"
+        - "3. monoallelic del(1p32) along with 1q+ or biallelic del(1p32)"
+        - "4. β2 microglobulin ≥5.5 mg/L with normal creatinine (<1.2 mg/dL)"
         - "CGS Criterion 1: del(17p) >20% and/or TP53 mutation"
         - "CGS Criterion 2: high-risk translocation plus 1q gain/amplification or del(1p32)"
         - "CGS Criterion 3: monoallelic del(1p32) with 1q gain/amplification or biallelic del(1p32)"
@@ -89,6 +98,8 @@ properties:
         - "Biallelic del(1p32) not detected"
         - "del(1p32) detected"
         - "del(1p32) not detected"
+        - "β2 microglobulin ≥5.5 mg/L"
+        - "β2 microglobulin <5.5 mg/L"
         - "Beta-2 microglobulin >=5.5 mg/L"
         - "Beta-2 microglobulin <5.5 mg/L"
         - "Creatinine <1.2 mg/dL"
