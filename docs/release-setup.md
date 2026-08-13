@@ -53,9 +53,18 @@ aws iam create-open-id-connect-provider \
   --client-id-list sts.amazonaws.com
 ```
 
+This repository uses GitHub's immutable OIDC subject format because it was
+created after GitHub introduced immutable owner and repository IDs. Its current
+OIDC subject prefix can be verified with:
+
+```bash
+gh api repos/theMMRF/mmrf_dictionary/actions/oidc/customization/sub
+```
+
 Next, save the following as `mmrf-dictionary-trust-policy.json`, replacing
 `AWS_ACCOUNT_ID`. The `sub` restriction permits only release jobs from this
-repository that use the protected `dictionary-release` environment.
+exact repository, identified by its immutable owner and repository IDs, that
+use the `dictionary-release` environment.
 
 ```json
 {
@@ -70,7 +79,7 @@ repository that use the protected `dictionary-release` environment.
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:theMMRF/mmrf_dictionary:environment:dictionary-release"
+          "token.actions.githubusercontent.com:sub": "repo:theMMRF@155470122/mmrf_dictionary@1332388091:environment:dictionary-release"
         }
       }
     }
@@ -85,6 +94,14 @@ aws iam create-role \
   --role-name mmrf-dictionary-release \
   --description "Publish versioned MMRF dictionary artifacts from GitHub Actions" \
   --assume-role-policy-document file://mmrf-dictionary-trust-policy.json
+```
+
+If the role already exists, replace its trust policy instead:
+
+```bash
+aws iam update-assume-role-policy \
+  --role-name mmrf-dictionary-release \
+  --policy-document file://mmrf-dictionary-trust-policy.json
 ```
 
 Save the following as `mmrf-dictionary-s3-policy.json`. It targets the
