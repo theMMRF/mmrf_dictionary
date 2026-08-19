@@ -53,8 +53,6 @@ properties:
     enum:
       - "High Risk"
       - "Standard Risk"
-      - "High"
-      - "Standard"
       - "NA"
 
   cgs_risk_criteria:
@@ -68,10 +66,6 @@ properties:
         - "2. an IgH translocation including t(4;14), t(14;16), or t(14;20) along with 1q+ and/or del(1p32)"
         - "3. monoallelic del(1p32) along with 1q+ or biallelic del(1p32)"
         - "4. β2 microglobulin ≥5.5 mg/L with normal creatinine (<1.2 mg/dL)"
-        - "CGS Criterion 1: del(17p) >20% and/or TP53 mutation"
-        - "CGS Criterion 2: high-risk translocation plus 1q gain/amplification or del(1p32)"
-        - "CGS Criterion 3: monoallelic del(1p32) with 1q gain/amplification or biallelic del(1p32)"
-        - "CGS Criterion 4: beta-2 microglobulin >=5.5 mg/L with creatinine <1.2 mg/dL"
 
   other_criteria:
     $ref: "_terms.yaml#/other_criteria/common"
@@ -100,8 +94,6 @@ properties:
         - "del(1p32) not detected"
         - "β2 microglobulin ≥5.5 mg/L"
         - "β2 microglobulin <5.5 mg/L"
-        - "Beta-2 microglobulin >=5.5 mg/L"
-        - "Beta-2 microglobulin <5.5 mg/L"
         - "Creatinine <1.2 mg/dL"
         - "Creatinine >=1.2 mg/dL"
 
