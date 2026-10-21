@@ -45,9 +45,8 @@ properties:
 
   age_at_diagnosis:
     description: >-
-      Age in days at which a condition or disease was first diagnosed. CDE: 3225640.
-      TCGA has the age in years with CDE 2006657, this is converted by ceil(age*365.25)
-      to get days.
+      Age at which a condition or disease was first diagnosed, in years.
+      MMRF Virtual Lab returns this field in years; do not convert it to days.
     type: number
 
   days_to_death:
