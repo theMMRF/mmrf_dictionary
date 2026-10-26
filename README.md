@@ -8,22 +8,6 @@ upstream remote for reviewing relevant Gen3 changes, but releases used by the
 MMRF environments are produced from this repository.
 
 
-## Diagnosis age units
-
-MMRF Virtual Lab's `diagnoses.age_at_diagnosis` API field is expressed in
-**years**, including values such as 47 and 74. The inherited GDC definition
-previously described days and linked to a day-valued caDSR term; that reference
-does not describe the MMRF API contract and has been removed from this term.
-Do not divide MMRF diagnosis ages by 365.25 in clients or multiply them during
-synthetic data generation. Follow-up durations and other `days_to_*` fields
-retain their own day-based units.
-
-This documentation correction does not convert records, change numeric
-validation bounds, or publish a dictionary release. The existing diagnosis
-maximum is retained for compatibility; changing ingestion validation or
-migrating historical datasets requires a separate data audit. Operators should
-verify the units in any older release before reusing it.
-
 # Data Dictionary
 
 The data dictionary provides the first level of validation for all submitted data.
