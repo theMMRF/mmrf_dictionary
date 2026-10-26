@@ -130,14 +130,9 @@ adverse_event_grade:
 age_at_diagnosis:
   common:
     description: >-
-      Age at the time of study entry/diagnosis expressed in number of days since birth.
-    termDef:
-      term: >-
-        Patient Diagnosis Age Day Value
-      source: caDSR
-      cde_id: 3225640
-      cde_version: 2.0
-      term_url: "https://cadsr.cancer.gov/onedata/dmdirect/NIH/NCI/CO/CDEDD?filter=CDEDD.ITEM_ID=3225640%20and%20ver_nr=2.0"
+      Age at the time of study entry/diagnosis, in years. MMRF Virtual Lab
+      returns this field in years; do not apply a days-to-years conversion.
+
 
 age_at_index:
   common:
