@@ -545,6 +545,17 @@ properties:
 ##      Not Allowed To Collect:
 ##        $ref: "_terms_enum.yaml#/not_allowed_to_collect/common"
 
+  disease_stage:
+    $ref: "_terms.yaml#/disease_stage/common"
+    enum:
+      - Healthy
+      - MGUS
+      - Smoldering Multiple Myeloma
+      - Multiple Myeloma
+      - Amyloidosis
+      - Unknown
+      - Not Reported
+
   distance_normal_to_tumor:
     $ref: "_terms.yaml#/distance_normal_to_tumor/common"
     enum:
