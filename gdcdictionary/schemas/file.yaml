@@ -126,8 +126,8 @@ properties:
   # portions:
   #   $ref: "_definitions.yaml#/to_many"
 
-  # samples:
-  #   $ref: "_definitions.yaml#/to_many"
+  samples:
+    $ref: "_definitions.yaml#/to_many"
 
   # slides:
   #   $ref: "_definitions.yaml#/to_many"
