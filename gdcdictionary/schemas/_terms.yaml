@@ -2015,6 +2015,13 @@ disease_response:
       cde_version: 1.0
       term_url: "https://cadsr.cancer.gov/onedata/dmdirect/NIH/NCI/CO/CDEDD?filter=CDEDD.ITEM_ID=5750671%20and%20ver_nr=1.0"
 
+disease_stage:
+  common:
+    description: >-
+      The patient's plasma cell disease stage when the sample was collected,
+      normalized across studies so that samples can be compared and filtered.
+      Healthy means a donor with no known plasma cell disorder.
+
 disease_type:
   common:
     description: >-
