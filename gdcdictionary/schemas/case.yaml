@@ -159,6 +159,10 @@ properties:
     #   Unknown:
     #     $ref: "_terms_enum.yaml#/unknown/common"
 
+  original_subject_id:
+    $ref: "_terms.yaml#/original_subject_id/common"
+    type: string
+
   primary_site:
     $ref: "_terms.yaml#/primary_site/common"
     enum:

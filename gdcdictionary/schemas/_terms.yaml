@@ -4463,6 +4463,20 @@ other_criteria:
       cde_version:
       term_url: "https://doi.org/10.1200/JCO-24-01893"
 
+original_sample_id:
+  common:
+    description: >-
+      The sample identifier exactly as the contributing study recorded it, before it
+      was given this data commons' submitter ID. Use it to trace a sample back to
+      the study's own records.
+
+original_subject_id:
+  common:
+    description: >-
+      The participant identifier exactly as the contributing study recorded it, before
+      it was given this data commons' submitter ID. Use it to trace a case back to
+      the study's own records.
+
 osteopenia_osteoporosis:
   common:
     description: >-
