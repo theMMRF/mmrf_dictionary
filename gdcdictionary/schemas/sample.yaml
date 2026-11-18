@@ -728,6 +728,10 @@ properties:
     $ref: "_terms.yaml#/oct_embedded/common"
     type: string
 
+  original_sample_id:
+    $ref: "_terms.yaml#/original_sample_id/common"
+    type: string
+
   passage_count:
     $ref: "_terms.yaml#/passage_count/common"
     type: integer
