@@ -91,6 +91,7 @@ properties:
     $ref: "_terms.yaml#/experimental_strategy/common"
     enum:
       - WGS
+      - WXS
 
   platform:
     $ref: "_terms.yaml#/platform/common"
