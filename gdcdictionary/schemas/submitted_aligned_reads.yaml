@@ -67,6 +67,8 @@ properties:
     $ref: "_terms.yaml#/data_category/common"
     enum:
       - Sequencing Reads
+      - Chromatin Accessibility
+      - Immune Repertoire
 
   data_type:
     $ref: "_terms.yaml#/data_type/common"
