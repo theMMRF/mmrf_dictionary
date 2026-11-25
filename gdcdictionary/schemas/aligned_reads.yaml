@@ -114,6 +114,7 @@ properties:
     $ref: "_terms.yaml#/data_category/common"
     enum:
       - Sequencing Reads
+      - Immune Repertoire
 
   data_format:
     $ref: "_terms.yaml#/data_format/common"

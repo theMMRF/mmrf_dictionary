@@ -62,6 +62,7 @@ properties:
     $ref: "_terms.yaml#/data_category/common"
     enum:
       - Flow Cytometry
+      - Proteome Profiling
 
   data_format:
     $ref: "_terms.yaml#/data_format/common"
@@ -72,6 +73,7 @@ properties:
     $ref: "_terms.yaml#/data_type/common"
     enum:
       - Raw Flow Cytometry Data
+      - Raw Mass Cytometry Data
 
   experimental_strategy:
     $ref: "_terms.yaml#/experimental_strategy/common"
